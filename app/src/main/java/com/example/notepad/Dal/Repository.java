@@ -39,10 +39,13 @@ public class Repository {
 
         executor.execute(() -> {
             long rowId = db.noteDao().insert(note);
-            if(rowId < 1)
+            refreshNotes();
+            if(rowId < 1) {
                 executeOnMainThread(() -> task.setResult(rowId));
-            else
+            }
+            else {
                 executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException("Error occurred while inserting note to database"), rowId));
+            }
         });
 
         return task;
@@ -77,10 +80,32 @@ public class Repository {
 
         executor.execute(() -> {
             int rowsAffected = db.noteDao().update(note);
-            if(rowsAffected == 1)
+            refreshNotes();
+            if(rowsAffected == 1) {
                 executeOnMainThread(() -> task.setResult(rowsAffected));
-            else
+            }
+            else {
                 executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException(rowsAffected<0 ? "No note got updated" : "More than one note got updated"), rowsAffected));
+            }
+        });
+
+        return task;
+    }
+
+    private boolean isInsertOrUpdateNoteCalled = false;
+
+    public Task<Boolean> insertOrUpdateNote(@NonNull Note note) {
+//        isInsertOrUpdateNoteCalled = true;
+        if(note == null)
+            throw new IllegalArgumentException("Note cannot be null");
+
+        TaskImpl<Boolean> task = new TaskImpl<>();
+
+        executor.execute(() -> {
+            db.noteDao().insertOrUpdate(note);
+            refreshNotes();
+            // TODO: 22-02-2021 check for valid insert/update
+            task.setResult(true);
         });
 
         return task;
@@ -94,10 +119,13 @@ public class Repository {
 
         executor.execute(() -> {
             int rowsDeleted = db.noteDao().delete(note);
-            if(rowsDeleted == 1)
+            refreshNotes();
+            if(rowsDeleted == 1) {
                 executeOnMainThread(() -> task.setResult(rowsDeleted));
-            else
+            }
+            else {
                 executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException(rowsDeleted<0 ? "No note got deleted" : "More than one note got deleted"), rowsDeleted));
+            }
         });
 
         return task;
@@ -111,10 +139,13 @@ public class Repository {
 
         executor.execute(() -> {
             int rowsDeleted = db.noteDao().delete(id);
-            if(rowsDeleted == 1)
+            refreshNotes();
+            if(rowsDeleted == 1) {
                 executeOnMainThread(() -> task.setResult(rowsDeleted));
-            else
+            }
+            else {
                 executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException(rowsDeleted<0 ? "No note got deleted" : "More than one note got deleted"), rowsDeleted));
+            }
         });
 
         return task;
@@ -141,10 +172,21 @@ public class Repository {
 
         executor.execute(() -> {
             int rowsDeleted = db.noteDao().deleteAll();
+            refreshNotes();
             executeOnMainThread(() -> task.setResult(rowsDeleted));
         });
 
         return task;
+    }
+
+    private void refreshNotes() {
+//        if(isInsertOrUpdateNoteCalled)
+//            throw new RuntimeException();
+        executor.execute(() -> {
+            List<Note> noteList = db.noteDao().getAll();
+            // TODO: 22-02-2021 Check the returned noteList value
+            executeOnMainThread(() -> notes.setValue(noteList));
+        });
     }
 
     private void executeOnMainThread(Runnable runnable) {

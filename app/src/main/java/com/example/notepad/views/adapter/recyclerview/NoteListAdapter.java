@@ -15,6 +15,7 @@ import com.example.notepad.R;
 import com.example.notepad.databinding.NoteListItemBinding;
 import com.example.notepad.models.Note;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHolder> {
@@ -30,12 +31,18 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHo
 
     public void setNotes(List<Note> notes) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtilCallback<>(this.notes, notes,
-                ((oldItemPosition, newItemPosition) -> this.notes.get(oldItemPosition).getId() == notes.get(newItemPosition).getId()),
-                ((oldItemPosition, newItemPosition) -> this.notes.get(oldItemPosition).equals(notes.get(newItemPosition)))));
+                ((oldItemPosition, newItemPosition) -> {
+                    boolean result = this.notes.get(oldItemPosition).getId() == notes.get(newItemPosition).getId();
 
-        this.notes = notes;
+                    return result;
+                }),
+                ((oldItemPosition, newItemPosition) -> {
+                    boolean result = this.notes.get(oldItemPosition).equals(notes.get(newItemPosition));
 
+                    return result;
+                })));
         diffResult.dispatchUpdatesTo(this);
+        this.notes = notes;
     }
 
     @NonNull

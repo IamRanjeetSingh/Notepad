@@ -34,11 +34,7 @@ public class MainViewModel extends AndroidViewModel {
         return repo.getAllNotes();
     }
 
-    public void addNote(Note note) {
-//        repo.addNote(note);
-    }
-
-    public void addOrUpdateNote(Note note) {
-//        repo.addOrUpdateNote(note);
+    public void insertOrUpdateNote(Note note) {
+        repo.insertOrUpdateNote(note);
     }
 }

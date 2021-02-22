@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -19,6 +20,9 @@ public abstract class NoteDao {
 
     @Update
     public abstract int update(@NonNull Note note);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertOrUpdate(@NonNull Note note);
 
     @Delete
     public abstract int delete(@NonNull Note note);

@@ -39,8 +39,6 @@ public class NoteFragment extends Fragment {
         binding.titleEditText.addTextChangedListener(new TextInputLayoutErrorRemover(binding.titleTextInputLayout));
         binding.bodyEditText.addTextChangedListener(new TextInputLayoutErrorRemover(binding.bodyTextInputLayout));
 
-//        binding.saveNote.setOnClickListener(view -> saveNote());
-
         return binding.getRoot();
     }
 
@@ -59,10 +57,10 @@ public class NoteFragment extends Fragment {
             String title = binding.titleEditText.getText().toString().trim();
             String body = binding.bodyEditText.getText().toString().trim();
 
-            currentNote.setTitle(title);
-            currentNote.setBody(body);
+            Note newOrUpdatedNote = new Note(title, body);
+            newOrUpdatedNote.setId(currentNote.getId());
 
-            mainViewModel.addOrUpdateNote(currentNote);
+            mainViewModel.insertOrUpdateNote(newOrUpdatedNote);
 
             if(getActivity() != null)
                 getActivity().getSupportFragmentManager().popBackStack();

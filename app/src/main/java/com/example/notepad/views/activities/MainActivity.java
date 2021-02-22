@@ -29,10 +29,6 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
         mainViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory(getApplication())).get(MainViewModel.class);
 
-        //only for debugging purposes
-        deleteDatabase("NotepadDb");
-        insertDummyNotes();
-
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -68,7 +64,9 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
     }
 
 
-    private void insertDummyNotes() {
+    private void feedDummyData() {
+        //only for debugging purposes
+        deleteDatabase("NotepadDb");
         for(int i = 0; i < 10; i++) {
             Repository repo = new Repository(this);
             repo.insertNote(new Note("Note "+(i+1), "This is the body of the note. This is the body of a standard note. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
