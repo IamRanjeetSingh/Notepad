@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Notepad</string>
+    <string name="note_title_template">Title</string>
+    <string name="note_body_template">This is the body of a standard note. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="Title">Title</string>
+    <string name="Body">Body</string>
+
+    <!--Errors-->
+    <string name="Required_Field_Empty_Error">required</string>
+</resources>
