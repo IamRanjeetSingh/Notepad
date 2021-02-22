@@ -15,7 +15,9 @@
             android:layout_height="?attr/actionBarSize"
             app:title="@string/app_name"
             app:titleTextColor="@android:color/white"
-            app:layout_scrollFlags="scroll|enterAlways|snap"/>
+            app:menu="@menu/main_menu"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
+        </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
     <FrameLayout
         android:id="@+id/fragmentContainer"

@@ -58,7 +58,8 @@ public class NoteFragment extends Fragment {
             String body = binding.bodyEditText.getText().toString().trim();
 
             Note newOrUpdatedNote = new Note(title, body);
-            newOrUpdatedNote.setId(currentNote.getId());
+            if(currentNote != null)
+                newOrUpdatedNote.setId(currentNote.getId());
 
             mainViewModel.insertOrUpdateNote(newOrUpdatedNote);
 

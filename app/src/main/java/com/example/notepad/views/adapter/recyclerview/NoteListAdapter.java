@@ -1,6 +1,5 @@
 package com.example.notepad.views.adapter.recyclerview;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -15,15 +14,14 @@ import com.example.notepad.R;
 import com.example.notepad.databinding.NoteListItemBinding;
 import com.example.notepad.models.Note;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHolder> {
 
     private List<Note> notes;
-    private OnVhClickListener<NoteListAdapter.ViewHolder> vhClickListener;
+    private VhInteractionListener<ViewHolder> vhClickListener;
 
-    public NoteListAdapter(LifecycleOwner lifecycleOwner, LiveData<List<Note>> liveNotes, OnVhClickListener<NoteListAdapter.ViewHolder> vhClickListener) {
+    public NoteListAdapter(LifecycleOwner lifecycleOwner, LiveData<List<Note>> liveNotes, VhInteractionListener<ViewHolder> vhClickListener) {
         this.notes = liveNotes.getValue();
         liveNotes.observe(lifecycleOwner, this::setNotes);
         this.vhClickListener = vhClickListener;
@@ -31,17 +29,11 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHo
 
     public void setNotes(List<Note> notes) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtilCallback<>(this.notes, notes,
-                ((oldItemPosition, newItemPosition) -> {
-                    boolean result = this.notes.get(oldItemPosition).getId() == notes.get(newItemPosition).getId();
+                ((oldItemPosition, newItemPosition) -> this.notes.get(oldItemPosition).getId() == notes.get(newItemPosition).getId()),
+                ((oldItemPosition, newItemPosition) -> this.notes.get(oldItemPosition).equals(notes.get(newItemPosition)))));
 
-                    return result;
-                }),
-                ((oldItemPosition, newItemPosition) -> {
-                    boolean result = this.notes.get(oldItemPosition).equals(notes.get(newItemPosition));
-
-                    return result;
-                })));
         diffResult.dispatchUpdatesTo(this);
+
         this.notes = notes;
     }
 
@@ -66,11 +58,11 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHo
         private NoteListItemBinding binding;
         private Note note;
 
-        private ViewHolder(NoteListItemBinding binding, OnVhClickListener<NoteListAdapter.ViewHolder> vhClickListener) {
+        private ViewHolder(NoteListItemBinding binding, VhInteractionListener<ViewHolder> vhClickListener) {
             super(binding.getRoot());
             this.binding = binding;
 
-            binding.getRoot().setOnClickListener(view -> vhClickListener.onVHClick(this));
+            binding.getRoot().setOnClickListener(view -> vhClickListener.onVhClick(this));
         }
 
         private void bind(Note note) {

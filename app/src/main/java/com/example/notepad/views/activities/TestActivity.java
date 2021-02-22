@@ -10,8 +10,10 @@ import androidx.databinding.DataBindingUtil;
 
 import com.example.notepad.Dal.Repository;
 import com.example.notepad.R;
+import com.example.notepad.databinding.SigninActivityBinding;
 import com.example.notepad.databinding.TestActivityBinding;
 import com.example.notepad.models.Note;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -29,30 +31,30 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TestActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.test_activity);
+        SigninActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.signin_activity);
 
-        Log.d("MyTag", "onCreate: deleteDatabase "+deleteDatabase("NotepadDb"));
-
-        RepositoryTests repositoryTests = new RepositoryTests(getApplicationContext());
-        repositoryTests.runAllTests();
-
-        binding.data.setText(
-                "Total Tests: "+repositoryTests.getTotalTests()+
-                "\nPassed Tests: "+repositoryTests.getPassedTests()+
-                "\nFailed Tests: "+repositoryTests.getFailedTests()
-        );
-
-        if(repositoryTests.getFailedTests() > 0) {
-            List<String> failedTests = repositoryTests.getFailedTestsList();
-            List<String> failedTestsReasons = repositoryTests.getFailedTestsReasonsList();
-            binding.data.append("\nFailed Tests:");
-            for(int i = 0; i < failedTests.size() && i < failedTestsReasons.size(); i++) {
-                binding.data.append(
-                        "\nMethod:\n"+failedTests.get(i)+
-                        "\nReason:\n"+failedTestsReasons.get(i)
-                );
-            }
-        }
+//        Log.d("MyTag", "onCreate: deleteDatabase "+deleteDatabase("NotepadDb"));
+//
+//        RepositoryTests repositoryTests = new RepositoryTests(getApplicationContext());
+//        repositoryTests.runAllTests();
+//
+//        binding.data.setText(
+//                "Total Tests: "+repositoryTests.getTotalTests()+
+//                "\nPassed Tests: "+repositoryTests.getPassedTests()+
+//                "\nFailed Tests: "+repositoryTests.getFailedTests()
+//        );
+//
+//        if(repositoryTests.getFailedTests() > 0) {
+//            List<String> failedTests = repositoryTests.getFailedTestsList();
+//            List<String> failedTestsReasons = repositoryTests.getFailedTestsReasonsList();
+//            binding.data.append("\nFailed Tests:");
+//            for(int i = 0; i < failedTests.size() && i < failedTestsReasons.size(); i++) {
+//                binding.data.append(
+//                        "\nMethod:\n"+failedTests.get(i)+
+//                        "\nReason:\n"+failedTestsReasons.get(i)
+//                );
+//            }
+//        }
     }
 
     public static class RepositoryTests extends TestClass {
@@ -61,7 +63,7 @@ public class TestActivity extends AppCompatActivity {
         private Repository repo;
 
         public RepositoryTests(Context context) {
-            repo = new Repository(context);
+            repo = new Repository(context, GoogleSignIn.getLastSignedInAccount(context));
         }
 
         @TestMethod

@@ -9,6 +9,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.notepad.models.Note;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -22,10 +24,14 @@ public class Repository {
     private MutableLiveData<List<Note>> notes = new MutableLiveData<>(null);
     private Database db;
     private Executor executor;
+    private GoogleSignInAccount gAccount;
 
-    public Repository(Context context) {
+    public Repository(Context context, @NonNull GoogleSignInAccount gAccount) {
         db = Database.getInstance(context);
         executor = Executors.newSingleThreadExecutor();
+        if(gAccount == null)
+            throw new IllegalArgumentException(GoogleSignInAccount.class.getSimpleName()+" instance cannot be null");
+        this.gAccount = gAccount;
     }
 
     public Task<Long> insertNote(Note note) {
@@ -34,6 +40,8 @@ public class Repository {
 
         if(note.getTitle() == null || note.getTitle().trim().equals("") || note.getBody() == null || note.getBody().trim().equals(""))
             throw new IllegalArgumentException("Note's title and body cannot be empty");
+
+        note.setAccountId(gAccount.getId());
 
         TaskImpl<Long> task = new TaskImpl<>();
 
@@ -59,7 +67,7 @@ public class Repository {
         TaskImpl<Note> task = new TaskImpl<>();
 
         executor.execute(() -> {
-            Note note = db.noteDao().get(id);
+            Note note = db.noteDao().get(gAccount.getId(), id);
             if(note != null)
                 executeOnMainThread(() -> task.setResult(note));
             else
@@ -92,14 +100,14 @@ public class Repository {
         return task;
     }
 
-    private boolean isInsertOrUpdateNoteCalled = false;
-
     public Task<Boolean> insertOrUpdateNote(@NonNull Note note) {
-//        isInsertOrUpdateNoteCalled = true;
         if(note == null)
             throw new IllegalArgumentException("Note cannot be null");
 
         TaskImpl<Boolean> task = new TaskImpl<>();
+
+        if(note.getAccountId() == null)
+            note.setAccountId(gAccount.getId());
 
         executor.execute(() -> {
             db.noteDao().insertOrUpdate(note);
@@ -138,7 +146,7 @@ public class Repository {
         TaskImpl<Integer> task = new TaskImpl<>();
 
         executor.execute(() -> {
-            int rowsDeleted = db.noteDao().delete(id);
+            int rowsDeleted = db.noteDao().delete(gAccount.getId(), id);
             refreshNotes();
             if(rowsDeleted == 1) {
                 executeOnMainThread(() -> task.setResult(rowsDeleted));
@@ -156,7 +164,7 @@ public class Repository {
         TaskImpl<LiveData<List<Note>>> task = new TaskImpl<>();
 
         executor.execute(() -> {
-            List<Note> noteList = db.noteDao().getAll();
+            List<Note> noteList = db.noteDao().getAll(gAccount.getId());
             // TODO: 22-02-2021 Check the returned noteList value
             executeOnMainThread(() -> {
                 notes.setValue(noteList);
@@ -171,7 +179,7 @@ public class Repository {
         TaskImpl<Integer> task = new TaskImpl<>();
 
         executor.execute(() -> {
-            int rowsDeleted = db.noteDao().deleteAll();
+            int rowsDeleted = db.noteDao().deleteAll(gAccount.getId());
             refreshNotes();
             executeOnMainThread(() -> task.setResult(rowsDeleted));
         });
@@ -180,10 +188,8 @@ public class Repository {
     }
 
     private void refreshNotes() {
-//        if(isInsertOrUpdateNoteCalled)
-//            throw new RuntimeException();
         executor.execute(() -> {
-            List<Note> noteList = db.noteDao().getAll();
+            List<Note> noteList = db.noteDao().getAll(gAccount.getId());
             // TODO: 22-02-2021 Check the returned noteList value
             executeOnMainThread(() -> notes.setValue(noteList));
         });

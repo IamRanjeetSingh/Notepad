@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.notepad.Dal.Repository;
 import com.example.notepad.models.Note;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public MainViewModel(Application app) {
         super(app);
-        repo = new Repository(app.getApplicationContext());
+        repo = new Repository(app.getApplicationContext(), GoogleSignIn.getLastSignedInAccount(app));
     }
 
     public Note getCurrentNote() {

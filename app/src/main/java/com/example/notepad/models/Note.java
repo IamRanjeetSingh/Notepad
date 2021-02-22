@@ -11,6 +11,8 @@ public class Note {
     @PrimaryKey(autoGenerate = true)
     private long id;
     @NonNull
+    private String accountId;
+    @NonNull
     private String title = "";
     @NonNull
     private String body = "";
@@ -30,6 +32,15 @@ public class Note {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @NonNull
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(@NonNull String accountId) {
+        this.accountId = accountId;
     }
 
     @NonNull
@@ -59,12 +70,12 @@ public class Note {
         if(id != 0 && n.id != 0 && id != n.id)
             return false;
         else
-            return title.equals(n.title) && body.equals(n.body);
+            return accountId.equals(n.accountId) && title.equals(n.title) && body.equals(n.body);
     }
 
     @NonNull
     @Override
     public String toString() {
-        return id+" "+title+" "+body;
+        return id+" "+accountId+" "+title+" "+body;
     }
 }

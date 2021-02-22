@@ -27,21 +27,15 @@ public abstract class NoteDao {
     @Delete
     public abstract int delete(@NonNull Note note);
 
-    @Query("DELETE FROM Notes WHERE id = :id")
-    public abstract int delete(long id);
+    @Query("DELETE FROM Notes WHERE accountId = :accountId AND id = :id")
+    public abstract int delete(String accountId, long id);
 
-    @Query("SELECT * FROM Notes WHERE id = :id")
-    public abstract Note get(long id);
+    @Query("SELECT * FROM Notes WHERE accountId = :accountId AND id = :id")
+    public abstract Note get(String accountId, long id);
 
-    @Query("SELECT * FROM Notes")
-    public abstract List<Note> getAll();
+    @Query("SELECT * FROM Notes WHERE accountId = :accountId")
+    public abstract List<Note> getAll(String accountId);
 
-    @Query("DELETE FROM Notes")
-    public abstract int deleteAll();
-
-    public enum OrderBy{
-        Id,
-        Title,
-        Body
-    }
+    @Query("DELETE FROM Notes WHERE accountId = :accountId")
+    public abstract int deleteAll(String accountId);
 }
