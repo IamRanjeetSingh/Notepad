@@ -10,6 +10,8 @@ import com.example.notepad.models.Note;
 
 import java.util.List;
 
+import java_async.Task;
+
 public class MainViewModel extends AndroidViewModel {
 
     private Note currentNote;
@@ -28,7 +30,7 @@ public class MainViewModel extends AndroidViewModel {
         this.currentNote = note;
     }
 
-    public LiveData<List<Note>> getAllNotes() {
+    public Task<LiveData<List<Note>>> getAllNotes() {
         return repo.getAllNotes();
     }
 

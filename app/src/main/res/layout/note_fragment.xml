@@ -39,16 +39,15 @@
             android:layout_height="match_parent"
             android:gravity="top"/>
     </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/saveNote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_save"
-        app:iconTint="@android:color/white"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="25dp"
-        app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"/>
+<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+<!--        android:id="@+id/saveNote"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:icon="@drawable/ic_save"-->
+<!--        app:iconTint="@android:color/white"-->
+<!--        android:layout_marginEnd="25dp"-->
+<!--        android:layout_marginBottom="25dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--    app:layout_constraintBottom_toBottomOf="parent"/>-->
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

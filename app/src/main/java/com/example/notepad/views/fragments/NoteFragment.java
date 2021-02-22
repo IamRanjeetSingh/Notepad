@@ -39,12 +39,12 @@ public class NoteFragment extends Fragment {
         binding.titleEditText.addTextChangedListener(new TextInputLayoutErrorRemover(binding.titleTextInputLayout));
         binding.bodyEditText.addTextChangedListener(new TextInputLayoutErrorRemover(binding.bodyTextInputLayout));
 
-        binding.saveNote.setOnClickListener(view -> saveNote());
+//        binding.saveNote.setOnClickListener(view -> saveNote());
 
         return binding.getRoot();
     }
 
-    private void saveNote() {
+    public void saveNote() {
         boolean canBeSaved = true;
         if(binding.titleEditText.getText() == null || binding.titleEditText.getText().toString().trim().equals("")) {
             binding.titleTextInputLayout.setError(getContext() != null ? getContext().getString(R.string.Required_Field_Empty_Error) : "");

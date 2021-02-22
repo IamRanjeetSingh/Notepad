@@ -6,11 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgLight">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/noteList"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/noteListSwipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tool:itemCount="10"
-        tool:listitem="@layout/note_list_item"/>
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/noteList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tool:itemCount="10"
+            tool:listitem="@layout/note_list_item"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

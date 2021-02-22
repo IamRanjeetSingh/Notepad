@@ -1,6 +1,8 @@
 package com.example.notepad.Dal;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -38,9 +40,9 @@ public class Repository {
         executor.execute(() -> {
             long rowId = db.noteDao().insert(note);
             if(rowId < 1)
-                task.setResult(rowId);
+                executeOnMainThread(() -> task.setResult(rowId));
             else
-                task.setFailure(new RoomInvalidOperationException("Error occurred while inserting note to database"), rowId);
+                executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException("Error occurred while inserting note to database"), rowId));
         });
 
         return task;
@@ -56,9 +58,9 @@ public class Repository {
         executor.execute(() -> {
             Note note = db.noteDao().get(id);
             if(note != null)
-                task.setResult(note);
+                executeOnMainThread(() -> task.setResult(note));
             else
-                task.setFailure(new RoomInvalidOperationException("Error occurred while inserting note to database"), null);
+                executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException("Error occurred while inserting note to database"), null));
         });
 
         return task;
@@ -76,9 +78,9 @@ public class Repository {
         executor.execute(() -> {
             int rowsAffected = db.noteDao().update(note);
             if(rowsAffected == 1)
-                task.setResult(rowsAffected);
+                executeOnMainThread(() -> task.setResult(rowsAffected));
             else
-                task.setFailure(new RoomInvalidOperationException(rowsAffected<0 ? "No note got updated" : "More than one note got updated"), rowsAffected);
+                executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException(rowsAffected<0 ? "No note got updated" : "More than one note got updated"), rowsAffected));
         });
 
         return task;
@@ -93,9 +95,9 @@ public class Repository {
         executor.execute(() -> {
             int rowsDeleted = db.noteDao().delete(note);
             if(rowsDeleted == 1)
-                task.setResult(rowsDeleted);
+                executeOnMainThread(() -> task.setResult(rowsDeleted));
             else
-                task.setFailure(new RoomInvalidOperationException(rowsDeleted<0 ? "No note got deleted" : "More than one note got deleted"), rowsDeleted);
+                executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException(rowsDeleted<0 ? "No note got deleted" : "More than one note got deleted"), rowsDeleted));
         });
 
         return task;
@@ -110,9 +112,9 @@ public class Repository {
         executor.execute(() -> {
             int rowsDeleted = db.noteDao().delete(id);
             if(rowsDeleted == 1)
-                task.setResult(rowsDeleted);
+                executeOnMainThread(() -> task.setResult(rowsDeleted));
             else
-                task.setFailure(new RoomInvalidOperationException(rowsDeleted<0 ? "No note got deleted" : "More than one note got deleted"), rowsDeleted);
+                executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException(rowsDeleted<0 ? "No note got deleted" : "More than one note got deleted"), rowsDeleted));
         });
 
         return task;
@@ -125,8 +127,10 @@ public class Repository {
         executor.execute(() -> {
             List<Note> noteList = db.noteDao().getAll();
             // TODO: 22-02-2021 Check the returned noteList value
-            notes.setValue(noteList);
-            task.setResult(notes);
+            executeOnMainThread(() -> {
+                notes.setValue(noteList);
+                task.setResult(notes);
+            });
         });
 
         return task;
@@ -137,9 +141,13 @@ public class Repository {
 
         executor.execute(() -> {
             int rowsDeleted = db.noteDao().deleteAll();
-            task.setResult(rowsDeleted);
+            executeOnMainThread(() -> task.setResult(rowsDeleted));
         });
 
         return task;
+    }
+
+    private void executeOnMainThread(Runnable runnable) {
+        new Handler(Looper.getMainLooper()).post(runnable);
     }
 }

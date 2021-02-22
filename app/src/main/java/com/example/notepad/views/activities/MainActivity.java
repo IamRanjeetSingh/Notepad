@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.notepad.Dal.Repository;
 import com.example.notepad.R;
 import com.example.notepad.databinding.MainActivityBinding;
 import com.example.notepad.models.Note;
@@ -28,6 +29,10 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
         mainViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory(getApplication())).get(MainViewModel.class);
 
+        //only for debugging purposes
+        deleteDatabase("NotepadDb");
+        insertDummyNotes();
+
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -37,14 +42,19 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
 
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             if(getSupportFragmentManager().findFragmentByTag(NoteFragment.TAG) != null)
-                binding.addNote.setVisibility(View.GONE);
+                binding.addNote.setIconResource(R.drawable.ic_save);
             else
-                binding.addNote.setVisibility(View.VISIBLE);
+                binding.addNote.setIconResource(R.drawable.ic_add);
         });
 
         binding.addNote.setOnClickListener(view -> {
-            mainViewModel.setCurrentNote(null);
-            openNoteFragment();
+            NoteFragment noteFragment = (NoteFragment) getSupportFragmentManager().findFragmentByTag(NoteFragment.TAG);
+            if(noteFragment == null) {
+                mainViewModel.setCurrentNote(null);
+                openNoteFragment();
+            } else {
+                noteFragment.saveNote();
+            }
         });
     }
 
@@ -55,5 +65,13 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
                 .add(binding.fragmentContainer.getId(), new NoteFragment(), NoteFragment.TAG)
                 .addToBackStack("AddEditNote")
                 .commit();
+    }
+
+
+    private void insertDummyNotes() {
+        for(int i = 0; i < 10; i++) {
+            Repository repo = new Repository(this);
+            repo.insertNote(new Note("Note "+(i+1), "This is the body of the note. This is the body of a standard note. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
+        }
     }
 }
