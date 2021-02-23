@@ -5,7 +5,17 @@
     <string name="Title">Title</string>
     <string name="Body">Body</string>
     <string name="Account">Account</string>
+    <string name="Delete">Delete</string>
+    <string name="cancel">cancel</string>
+
+    <!--Templates-->
+    <string name="selected_template">%1$d selected</string>
+    <plurals name="Delete_Confirmation_Template">
+        <item quantity="one">Are you sure you want to delete %1$d note</item>
+        <item quantity="other">Are you sure you want to delete %1$d notes</item>
+    </plurals>
 
     <!--Errors-->
     <string name="Required_Field_Empty_Error">required</string>
+    <string name="GoogleSignIn_Error">Oops!! something went wrong please try again</string>
 </resources>

@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.notepad.models.Note;
+import com.example.notepad.model.Note;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
@@ -26,12 +26,10 @@ public class Repository {
     private Executor executor;
     private GoogleSignInAccount gAccount;
 
-    public Repository(Context context, @NonNull GoogleSignInAccount gAccount) {
+    public Repository(Context context) {
         db = Database.getInstance(context);
         executor = Executors.newSingleThreadExecutor();
-        if(gAccount == null)
-            throw new IllegalArgumentException(GoogleSignInAccount.class.getSimpleName()+" instance cannot be null");
-        this.gAccount = gAccount;
+        this.gAccount = GoogleSignIn.getLastSignedInAccount(context);
     }
 
     public Task<Long> insertNote(Note note) {
@@ -154,6 +152,21 @@ public class Repository {
             else {
                 executeOnMainThread(() -> task.setFailure(new RoomInvalidOperationException(rowsDeleted<0 ? "No note got deleted" : "More than one note got deleted"), rowsDeleted));
             }
+        });
+
+        return task;
+    }
+
+    public Task<Integer> deleteNotes(@NonNull List<Long> ids) {
+        if(ids == null)
+            throw new IllegalArgumentException("Note's list cannot be null");
+
+        TaskImpl<Integer> task = new TaskImpl<>();
+
+        executor.execute(() -> {
+            int rowsDeleted = db.noteDao().delete(gAccount.getId(), ids);
+            refreshNotes();
+            executeOnMainThread(() -> task.setResult(rowsDeleted));
         });
 
         return task;

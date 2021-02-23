@@ -1,4 +1,4 @@
-package com.example.notepad.viewmodels;
+package com.example.notepad.viewmodel;
 
 import android.app.Application;
 
@@ -6,8 +6,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.notepad.Dal.Repository;
-import com.example.notepad.models.Note;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.example.notepad.model.Note;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public MainViewModel(Application app) {
         super(app);
-        repo = new Repository(app.getApplicationContext(), GoogleSignIn.getLastSignedInAccount(app));
+        repo = new Repository(app.getApplicationContext());
     }
 
     public Note getCurrentNote() {
@@ -37,5 +36,9 @@ public class MainViewModel extends AndroidViewModel {
 
     public void insertOrUpdateNote(Note note) {
         repo.insertOrUpdateNote(note);
+    }
+
+    public Task<Integer> deleteNotes(List<Long> ids) {
+        return repo.deleteNotes(ids);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.notepad.views.activities;
+package com.example.notepad.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -60,7 +60,7 @@ public class SignInActivity extends AppCompatActivity {
             onSignIn();
         } catch (ApiException e) {
             Log.d("MyTad", "signIn: sign in failed: "+e);
-            binding.signInError.setText("Something went wrong. Please try again");
+            binding.signInError.setText(getString(R.string.GoogleSignIn_Error));
         }
     }
 

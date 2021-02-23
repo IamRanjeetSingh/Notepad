@@ -1,6 +1,5 @@
 package com.example.notepad.Dal;
 
-import androidx.annotation.NonNull;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -8,7 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.notepad.models.Note;
+import com.example.notepad.model.Note;
 
 import java.util.List;
 
@@ -16,19 +15,22 @@ import java.util.List;
 public abstract class NoteDao {
 
     @Insert
-    public abstract long insert(@NonNull Note note);
+    public abstract long insert(Note note);
 
     @Update
-    public abstract int update(@NonNull Note note);
+    public abstract int update(Note note);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insertOrUpdate(@NonNull Note note);
+    public abstract void insertOrUpdate(Note note);
 
     @Delete
-    public abstract int delete(@NonNull Note note);
+    public abstract int delete(Note note);
 
     @Query("DELETE FROM Notes WHERE accountId = :accountId AND id = :id")
     public abstract int delete(String accountId, long id);
+
+    @Query("DELETE FROM Notes WHERE accountId = :accountId AND id IN (:ids)")
+    public abstract int delete(String accountId, List<Long> ids);
 
     @Query("SELECT * FROM Notes WHERE accountId = :accountId AND id = :id")
     public abstract Note get(String accountId, long id);

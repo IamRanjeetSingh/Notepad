@@ -1,31 +1,29 @@
-package com.example.notepad.views.activities;
+package com.example.notepad.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.notepad.Dal.Repository;
 import com.example.notepad.R;
 import com.example.notepad.databinding.MainActivityBinding;
-import com.example.notepad.models.Note;
-import com.example.notepad.viewmodels.MainViewModel;
-import com.example.notepad.views.fragments.NoteFragment;
-import com.example.notepad.views.fragments.NoteListFragment;
+import com.example.notepad.viewmodel.MainViewModel;
+import com.example.notepad.view.fragment.NoteFragment;
+import com.example.notepad.view.fragment.NoteListFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 public class MainActivity extends AppCompatActivity implements NoteListFragment.Commands {
 
     private MainActivityBinding binding;
     private MainViewModel mainViewModel;
+    private ActionMode actionMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,9 +60,7 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
                 GoogleSignIn
                         .getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestId().build())
                         .signOut()
-                        .addOnCompleteListener(task -> {
-                            startActivity(new Intent(MainActivity.this, SignInActivity.class));
-                        });
+                        .addOnCompleteListener(task -> startActivity(new Intent(MainActivity.this, SignInActivity.class)));
                 return true;
             }
             else
@@ -81,22 +77,65 @@ public class MainActivity extends AppCompatActivity implements NoteListFragment.
                 .commit();
     }
 
-    @Override
-    public void showContextualActionBar() {
-
+    private void deleteSelectedNotes() {
+        NoteListFragment noteListFragment = (NoteListFragment) getSupportFragmentManager().findFragmentByTag(NoteListFragment.TAG);
+        if(noteListFragment != null)
+            noteListFragment.deleteSelectedNotesIfConfirmed();
     }
 
     @Override
-    public void hideContextualActionBar() {
-
+    public void openActionBar() {
+        if(!isActionBarOpen())
+            actionMode = startSupportActionMode(actionModeCallback);
     }
 
-    private void feedDummyData() {
-        //only for debugging purposes
-        deleteDatabase("NotepadDb");
-        for(int i = 0; i < 10; i++) {
-            Repository repo = new Repository(this, GoogleSignIn.getLastSignedInAccount(this));
-            repo.insertNote(new Note("Note "+(i+1), "This is the body of the note. This is the body of a standard note. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
+    @Override
+    public void updateActionBar(int selectionCount) {
+        if(isActionBarOpen())
+            actionMode.setTitle(getString(R.string.selected_template, selectionCount));
+    }
+
+    @Override
+    public void closeActionBar() {
+        if(isActionBarOpen()) {
+            actionMode.finish();
+            actionMode = null;
+
+            NoteListFragment noteListFragment = (NoteListFragment) getSupportFragmentManager().findFragmentByTag(NoteListFragment.TAG);
+            if(noteListFragment != null)
+                noteListFragment.clearNoteSelections();
         }
     }
+
+    @Override
+    public boolean isActionBarOpen() {
+        return actionMode != null;
+    }
+
+    private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.action_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            if (item.getItemId() == R.id.delete) {
+                deleteSelectedNotes();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            closeActionBar();
+        }
+    };
 }

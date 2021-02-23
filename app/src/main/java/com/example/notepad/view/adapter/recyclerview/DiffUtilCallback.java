@@ -1,6 +1,4 @@
-package com.example.notepad.views.adapter.recyclerview;
-
-import android.util.Log;
+package com.example.notepad.view.adapter.recyclerview;
 
 import androidx.recyclerview.widget.DiffUtil;
 

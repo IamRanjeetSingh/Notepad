@@ -1,4 +1,4 @@
-package com.example.notepad.views.activities;
+package com.example.notepad.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

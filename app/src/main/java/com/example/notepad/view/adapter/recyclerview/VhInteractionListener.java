@@ -1,8 +1,8 @@
-package com.example.notepad.views.adapter.recyclerview;
+package com.example.notepad.view.adapter.recyclerview;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 public interface VhInteractionListener<T extends RecyclerView.ViewHolder> {
     void onVhClick(T vh);
-    void onVhLongClick(T vh);
+    boolean onVhLongClick(T vh);
 }

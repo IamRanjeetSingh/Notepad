@@ -1,4 +1,4 @@
-package com.example.notepad.views.fragments;
+package com.example.notepad.view.fragment;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,8 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.notepad.R;
 import com.example.notepad.databinding.NoteFragmentBinding;
-import com.example.notepad.models.Note;
-import com.example.notepad.viewmodels.MainViewModel;
+import com.example.notepad.model.Note;
+import com.example.notepad.viewmodel.MainViewModel;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class NoteFragment extends Fragment {
