@@ -14,12 +14,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.Task;
 
 public class SignInActivity extends AppCompatActivity {
+    private static final String TAG = "SignInActivity";
 
-    private static final int RC_SIGN_IN = 100;
+    private static final int RC_GOOGLE_SIGN_IN = 100;
 
     private SigninActivityBinding binding;
     private GoogleSignInClient gClient;
@@ -31,10 +34,15 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.signin_activity);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestId().build();
-        gClient = GoogleSignIn.getClient(this, gso);
+        GoogleSignInOptions gSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestId()
+                .requestProfile()
+                .requestEmail()
+                .build();
+        gClient = GoogleSignIn.getClient(this, gSignInOptions);
 
-        binding.signInBtn.setOnClickListener(v -> startActivityForResult(gClient.getSignInIntent(), RC_SIGN_IN));
+        binding.signInBtn.setOnClickListener(v -> startActivityForResult(gClient.getSignInIntent(), RC_GOOGLE_SIGN_IN));
+
     }
 
     @Override
@@ -49,18 +57,32 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RC_SIGN_IN) {
+        if(requestCode == RC_GOOGLE_SIGN_IN) {
             signIn(GoogleSignIn.getSignedInAccountFromIntent(data));
         }
     }
 
     private void signIn(Task<GoogleSignInAccount> signInTask) {
+        Log.d(TAG, "signIn() called with: signInTask = [" + signInTask + "]");
+        if(signInTask == null)
+            return;
         try {
             gAccount = signInTask.getResult(ApiException.class);
             onSignIn();
         } catch (ApiException e) {
-            Log.d("MyTad", "signIn: sign in failed: "+e);
-            binding.signInError.setText(getString(R.string.GoogleSignIn_Error));
+            String errorMessage;
+            if(e.getStatusCode() == CommonStatusCodes.NETWORK_ERROR)
+                errorMessage = getString(R.string.GoogleSignIn_Network_Error);
+            else if(e.getStatusCode() == CommonStatusCodes.INVALID_ACCOUNT)
+                errorMessage = getString(R.string.GoogleSignIn_InvalidAccount_Error);
+            else if(e.getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED)
+                errorMessage = getString(R.string.GoogleSignIn_SignInCancelled_Error);
+            else
+                errorMessage = getString(R.string.GoogleSignIn_Other_Error);
+
+            Log.e(TAG, "signIn: " + GoogleSignInStatusCodes.getStatusCodeString(e.getStatusCode()), e);
+
+            binding.signInError.setText(errorMessage);
         }
     }
 

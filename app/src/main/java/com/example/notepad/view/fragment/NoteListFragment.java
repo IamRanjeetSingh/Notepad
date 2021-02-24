@@ -1,6 +1,5 @@
 package com.example.notepad.view.fragment;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +16,14 @@ import com.example.notepad.R;
 import com.example.notepad.databinding.NoteListFragmentBinding;
 import com.example.notepad.view.adapter.recyclerview.util.SelectionTracker;
 import com.example.notepad.view.adapter.recyclerview.viewHolder.NoteListItem;
+import com.example.notepad.view.dialog.DeleteDialog;
+import com.example.notepad.view.dialog.DialogEvent;
+import com.example.notepad.view.dialog.DialogEventListener;
 import com.example.notepad.viewmodel.MainViewModel;
 import com.example.notepad.view.adapter.recyclerview.NoteListAdapter;
 import com.example.notepad.view.adapter.recyclerview.VhInteractionListener;
 
-public class NoteListFragment extends Fragment {
+public class NoteListFragment extends Fragment implements DialogEventListener {
     public static final String TAG = NoteListFragment.class.getSimpleName();
 
     private NoteListFragmentBinding binding;
@@ -29,7 +31,7 @@ public class NoteListFragment extends Fragment {
     private Commands parentActivity;
 
     private SelectionTracker<Long> selectionTracker;
-    private AlertDialog.Builder deleteConfirmationDialog;
+    private DeleteDialog deleteDialog;
 
     @Nullable
     @Override
@@ -39,12 +41,6 @@ public class NoteListFragment extends Fragment {
             mainViewModel = new ViewModelProvider(getActivity(), new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
             parentActivity = ((Commands) getActivity());
         }
-
-        deleteConfirmationDialog = new AlertDialog.Builder(getContext())
-                .setTitle(getString(R.string.Delete))
-                .setCancelable(false)
-                .setPositiveButton(R.string.Delete, (dialog, which) -> deleteSelectedNotes())
-                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
 
         selectionTracker = new SelectionTracker<>();
 
@@ -64,16 +60,32 @@ public class NoteListFragment extends Fragment {
         return binding.getRoot();
     }
 
+    private void createDeleteDialog(int selectionCount) {
+        if(deleteDialog == null) {
+            deleteDialog = new DeleteDialog();
+            Bundle arguments = new Bundle();
+            arguments.putInt(DeleteDialog.ARG_SELECTION_COUNT, selectionCount);
+            deleteDialog.setArguments(arguments);
+        }
+    }
+
+    public void deleteSelectedNotesIfConfirmed() {
+        createDeleteDialog(selectionTracker.getSelectionCount());
+        if(getChildFragmentManager().findFragmentByTag(DeleteDialog.TAG) == null)
+            deleteDialog.show(getChildFragmentManager(), DeleteDialog.TAG);
+    }
+
     public void clearNoteSelections() {
         selectionTracker.clearSelections();
         if(binding.noteList.getAdapter() != null)
             binding.noteList.getAdapter().notifyItemRangeChanged(0, binding.noteList.getAdapter().getItemCount());
     }
 
-    public void deleteSelectedNotesIfConfirmed() {
-        deleteConfirmationDialog
-                .setMessage(getResources().getQuantityString(R.plurals.Delete_Confirmation_Template, selectionTracker.getSelectionCount(), selectionTracker.getSelectionCount()))
-                .show();
+    @Override
+    public void onDialogEvent(DialogEvent dialogEvent) {
+        if(dialogEvent == DialogEvent.DELETE_NOTES) {
+            deleteSelectedNotes();
+        }
     }
 
     private void deleteSelectedNotes() {

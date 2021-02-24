@@ -22,6 +22,14 @@ public class MainViewModel extends AndroidViewModel {
         repo = new Repository(app.getApplicationContext());
     }
 
+    public String getAccountName() {
+        return repo.getAccountName();
+    }
+
+    public String getAccountEmail() {
+        return repo.getAccountEmail();
+    }
+
     public Note getCurrentNote() {
         return currentNote;
     }
@@ -38,7 +46,7 @@ public class MainViewModel extends AndroidViewModel {
         repo.insertOrUpdateNote(note);
     }
 
-    public Task<Integer> deleteNotes(List<Long> ids) {
-        return repo.deleteNotes(ids);
+    public void deleteNotes(List<Long> ids) {
+        repo.deleteNotes(ids);
     }
 }

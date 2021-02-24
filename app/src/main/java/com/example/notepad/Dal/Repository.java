@@ -32,6 +32,14 @@ public class Repository {
         this.gAccount = GoogleSignIn.getLastSignedInAccount(context);
     }
 
+    public String getAccountName() {
+        return gAccount.getDisplayName();
+    }
+
+    public String getAccountEmail() {
+        return gAccount.getEmail();
+    }
+
     public Task<Long> insertNote(Note note) {
         if(note == null)
             throw new IllegalArgumentException("Note cannot be null");
@@ -178,7 +186,6 @@ public class Repository {
 
         executor.execute(() -> {
             List<Note> noteList = db.noteDao().getAll(gAccount.getId());
-            // TODO: 22-02-2021 Check the returned noteList value
             executeOnMainThread(() -> {
                 notes.setValue(noteList);
                 task.setResult(notes);
@@ -203,7 +210,6 @@ public class Repository {
     private void refreshNotes() {
         executor.execute(() -> {
             List<Note> noteList = db.noteDao().getAll(gAccount.getId());
-            // TODO: 22-02-2021 Check the returned noteList value
             executeOnMainThread(() -> notes.setValue(noteList));
         });
     }
