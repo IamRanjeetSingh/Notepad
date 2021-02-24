@@ -14,10 +14,20 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file("C:\\Users\\Dell\\Documents\\KeyStoreForAndroid.jks")
+            storePassword "RanjeeT"
+            keyAlias "RanjeetAlias"
+            keyPassword "RanjeeTAlias"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 

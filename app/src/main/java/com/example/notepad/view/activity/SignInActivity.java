@@ -78,7 +78,7 @@ public class SignInActivity extends AppCompatActivity {
             else if(e.getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED)
                 errorMessage = getString(R.string.GoogleSignIn_SignInCancelled_Error);
             else
-                errorMessage = getString(R.string.GoogleSignIn_Other_Error);
+                errorMessage = getString(R.string.GoogleSignIn_Other_Error, e.getStatusCode(), GoogleSignInStatusCodes.getStatusCodeString(e.getStatusCode()));
 
             Log.e(TAG, "signIn: " + GoogleSignInStatusCodes.getStatusCodeString(e.getStatusCode()), e);
 

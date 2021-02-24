@@ -21,7 +21,7 @@
     <string name="Required_Field_Empty_Error">required</string>
     <string name="GoogleSignIn_Network_Error">Network Error!! please check your network connection</string>
     <string name="GoogleSignIn_InvalidAccount_Error">Invalid Account!! account specified is not valid</string>
-    <string name="GoogleSignIn_Other_Error">Oops!! something went wrong please try again</string>
+    <string name="GoogleSignIn_Other_Error">Oops!! something went wrong please try again\nError Code: %1$d - %2$s</string>
     <string name="GoogleSignIn_SignInCancelled_Error">You need to sign in with a Google account to use this app</string>
 
     <!--Placeholders-->
